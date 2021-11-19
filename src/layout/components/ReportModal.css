@@ -1,0 +1,13 @@
+.ReportModal {
+    width: 70vw;
+    height: 70vh;
+    z-index: 100;
+    position: fixed;
+    left: 10vw;
+    bottom: 10vh; 
+    /* -80vh HIDE */
+    padding: 5vh 5vw;
+    background-color: #fff;
+
+    transition: 0.5s ;
+}
