@@ -11,6 +11,7 @@ import {
     selectCount,
     selectCountIsOpenReportModal
   } from '../features/app/appSlice';
+import SearchBlock from "./SearchBlock";
 
 const Layout : React.FC =({children}) => {
     
@@ -20,9 +21,10 @@ const Layout : React.FC =({children}) => {
 
     return (
         <>
-            <div className="logo">
-                <h1>Bennevole</h1>
-            </div>
+            <SearchBlock/>
+            {/*<div className="logo">*/}
+            {/*    <h1>Bennevole</h1>*/}
+            {/*</div>*/}
             {appStatus === 'loading' && <Loading/>}
             {appStatus === 'failed' && <ErrorModal/>}
             <ReportModal/>
