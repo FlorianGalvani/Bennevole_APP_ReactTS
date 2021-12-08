@@ -1,5 +1,5 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '../../app/store';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '../../app/store';
 // import { fetchCount } from './appAPI';
 
 export interface AppState {
@@ -44,8 +44,8 @@ export const { setAppStatus, setIdDumpster, setIsOpenReportModal} = appSlice.act
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.app.value)`
-export const selectCount = (state: RootState) => state.app.status;
-export const selectCountIsOpenReportModal = (state: RootState) => state.app.reportModal.isOpen;
+export const selectAppStatus = (state: RootState) => state.app.status;
+export const selectIsOpenReportModal = (state: RootState) => state.app.reportModal.isOpen;
 export const selectIdDumpster = (state: RootState) => state.app.idDumpster;
 
 export default appSlice.reducer;

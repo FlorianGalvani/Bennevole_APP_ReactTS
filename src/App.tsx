@@ -1,8 +1,11 @@
+//Module utile 
 import React from 'react';
-import './App.css';
+
+//Composants 
 import Map from './components/Map'
 import Layout from './layout/layout'
 
+import './App.scss';
 
 const App: React.FC = () => {
   
@@ -12,7 +15,6 @@ const App: React.FC = () => {
         <Map />
       </Layout>
     </div>
-
   );
 }
 
