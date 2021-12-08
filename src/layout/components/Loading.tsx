@@ -1,9 +1,10 @@
+import { t } from 'i18next'
 import React from 'react'
-import './Loading.css'
+import './Loading.scss'
 const Loading: React.FC = () => {
     return (
         <div className="Loading">
-            <p>Chargement</p>
+            <p>{t('loading.text')}</p>
         </div>
     )
 }

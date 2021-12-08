@@ -1,5 +1,6 @@
 interface ICity {
-
+    cityName: string,
+    departement: string
 }
 
 interface IDumpster {

@@ -1,21 +1,32 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useRef, useEffect, useState } from 'react'
-import mapboxgl from 'mapbox-gl/';
+import mapboxgl from 'mapbox-gl';
+// import Directions from '@mapbox/mapbox-gl-directions';
 import "mapbox-gl/dist/mapbox-gl.css";
-
-import './Map.css'
-import emitter from '../utils/EventEmitter'
-
-import { ICity, IDumpster } from '../utils/interfaces'
-import { useAppSelector, useAppDispatch } from '../app/hooks';
+import { useAppDispatch } from '../app/hooks';
 import {
     setAppStatus,
     setIdDumpster,
     setIsOpenReportModal
 } from '../features/app/appSlice';
+import axios from 'axios'
+import { useTranslation, Trans } from 'react-i18next';
+
+// Interfaces
+import { ICity, IDumpster } from '../utils/interfaces'
+
+import './Map.scss'
+
+const lngs = {
+    en: { nativeName: 'English' },
+    fr: { nativeName: 'French' }
+};
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA';
 
 const MapComponent: React.FC = () => {
+    const { t, i18n } = useTranslation();
 
     const dispatch = useAppDispatch();
 
@@ -24,87 +35,96 @@ const MapComponent: React.FC = () => {
 
     const [cities, setCities] = useState<Array<ICity>>([])
     const [city, setCity] = useState<string>()
-    const [dumpsters, setDumpsters] = useState<Array<IDumpster>>([])
+
+    const [zoom, setZoom] = useState<number>(5)
 
     const [markers, setMarkers] = useState<Array<any>>([]) // Use to stock
 
+    const [userCoords, setUserCoords] = useState<Array<number>>([])
+
     useEffect(() => {
+
         if (map.current) return; // initialize map only once
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
             style: 'mapbox://styles/mapbox/streets-v11',
             center: [2.483833000000004, 46.48293196437044],
-            zoom: 5,
+            zoom: zoom,
             pitch: 15
         });
-        map.current.addControl(
+        const geocolateController = (
             new mapboxgl.GeolocateControl({
                 positionOptions: {
                     enableHighAccuracy: true
                 },
-                // When active the map will receive updates to the device's location as it changes.
                 trackUserLocation: true,
-                // Draw an arrow next to the location dot to indicate which direction the device is heading.
-                showUserHeading: true
-            }),
-            'bottom-left'
+                showUserHeading: true,
+                showAccuracyCircle: false
+            })
         );
+        geocolateController.on('geolocate', (position: any) => {
+            fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${position.coords.longitude + "," + position.coords.latitude}.json?limit=1&access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`)
+                .then((res) => res.json())
+                .then(
+                    (result) => {
+                        setUserCoords([position.coords.longitude, position.coords.latitude])
+                        setZoom(15)
+                        setCity(result.features[0].context[1].text);
+                    }
+                )
+        });
 
+        map.current.addControl(geocolateController, 'bottom-left');
 
-        fetch('http://localhost:8000/api/cities')
-            .then(response => response.json())
+        
+        axios.get('http://localhost:8000/api/cities')
             .then((result) => {
-                setCities(result)
+                console.log(result.data);
+                
+                setCities(result.data)
                 dispatch(setAppStatus('ok'))
 
             }).catch((err) => {
-                console.log('There is an error in fetching', err);
                 dispatch(setAppStatus('failed'))
-
-
             })
     }, []);
 
     useEffect(() => {
-        if (city === undefined) {
-            console.log('no city');
-
-            return
-        }
-        fetch(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${city + ", France"
-            }.json?limit=1&access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`
+        if (city === undefined) return
+        axios.get(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${city}, France}.json?limit=1&access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`
         )
-            .then((response) => response.json())
             .then((result) => {
-                console.log("result : ", result);
-                const coords = result.features[0].center;
+                const coords = result.data.features[0].center;
                 map.current.flyTo({
                     center: [
                         coords[0],
                         coords[1]
                     ],
-                    zoom:10,
+                    zoom: 10,
                     essential: true // this animation is considered essential with respect to prefers-reduced-motion
                 });
 
             });
-        fetch(`http://localhost:8000/api/dumpsters/${city}`)
-            .then((res) => res.json())
+        axios.get(`http://localhost:8000/api/dumpsters/${city}`)
             .then((result) => {
-                setDumpsters(result)
                 if (markers.length > 0) {
                     markers.forEach(element => {
                         element.remove()
                     });
                 }
                 // eslint-disable-next-line array-callback-return
-                result.map((dumpster: any) => {
-                    console.log(dumpster);
-
+                result.data.map((dumpster: any) => {
                     // Add an image to use as a custom marker
                     // create the popup
-                    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`<a id="reportButton" name="${dumpster.id}">Report error</a>`)
+                    console.log(dumpster);
+                    
+                    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                        `
+                        <a id="reportButton" name="${dumpster.id}">Report</a>
+                        <button id="navigateTo" lat="${dumpster.lat}" lon="${dumpster.lng}">Navigate To</button>  
+                        `
+                    )
                     // create DOM element for the marker
                     const el = document.createElement('div');
                     el.id = `marker_${dumpster.id}`;
@@ -118,16 +138,23 @@ const MapComponent: React.FC = () => {
                     marker.getElement().addEventListener('click', (e) => {
                         setTimeout(() => {
                             const reportButton = document.getElementById('reportButton')
+                            const navTo = document.getElementById('navigateTo')
                             const id = reportButton.getAttribute('name')
-
+                            const coords = [navTo.getAttribute('lon'),navTo.getAttribute('lat')]
+                            console.log('coords', coords);
+                            
                             reportButton.addEventListener('click', () => {
 
                                 dispatch(setIdDumpster(id))
-                                console.log('id is : ', id)
                                 dispatch(setIsOpenReportModal(true))
 
                             })
-
+                            navTo.addEventListener('click', () => {
+                                axios.get(`https://api.mapbox.com/directions/v5/mapbox/walking/${coords[0]},${coords[1]};${userCoords[0]},${userCoords[1]}?access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`).then((res) => {
+                                    console.log(res.data);
+                                    
+                                })
+                            })
                         })
                     })
                 })
@@ -140,18 +167,23 @@ const MapComponent: React.FC = () => {
     return (
         <div className="mapComponent">
             <div className="optionMenu">
-                <select name="city" id="citySelect" onChange={(e) => { if (e.target.value !== '') { setCity(e.target.value) } }}>
-                    <option value="">Select a city</option>
+
+                <select name="city" id="citySelect" value={city} onChange={(e) => { if (e.target.value !== '') { setCity(e.target.value) } }}>
+                    <option value="">{t('map.citySelector')}</option>
+   
                     {cities.map((city) => (
-                        <option value={city.toString()} key={city.toString()}>
-                            {city}
+                        <option value={city.cityName.toString()} key={city.cityName.toString()}>
+                            {city.cityName}
                         </option>
                     ))}
                 </select>
-                {/* <select name="mapStyle" id="mapStyleSelect">
-                    <option value="satelite">Satelite View</option>
-                </select> */}
-
+                <div>
+                    {Object.keys(lngs).map((lng) => (
+                        <button key={lng} style={{ fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal' }} type="submit" onClick={() => i18n.changeLanguage(lng)}>
+                            {lng}
+                        </button>
+                    ))}
+                </div>
             </div>
             <div ref={mapContainer} className="map-container" />
 
@@ -161,6 +193,3 @@ const MapComponent: React.FC = () => {
 }
 export default MapComponent
 
-function center(center: any, arg1: any[]) {
-    throw new Error('Function not implemented.');
-}
