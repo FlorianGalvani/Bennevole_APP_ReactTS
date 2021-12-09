@@ -1,5 +1,4 @@
 import React, {ChangeEventHandler, useEffect, useRef, useState} from 'react';
-import "./SearchBlock.scss";
 import axios from "axios";
 import { useAppDispatch } from '../app/hooks';
 import {setSelectedCity} from "../features/app/appSlice";
@@ -21,7 +20,7 @@ export default function SearchBlock() {
     const disptachCity = (e: any) => {
         dispatch(setSelectedCity(e.target.value));
 
-        handleVisibility();
+        if (barVisibility === "") handleVisibility();
     }
 
     const handleVisibility = () => {

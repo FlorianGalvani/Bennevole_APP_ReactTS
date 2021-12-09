@@ -1,5 +1,4 @@
 import React from 'react'
-import './ErrorModal.scss'
 import { useTranslation } from 'react-i18next';
 
 

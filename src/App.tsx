@@ -5,8 +5,6 @@ import React from 'react';
 import Map from './components/Map'
 import Layout from './layout/layout'
 
-import './App.scss';
-
 const App: React.FC = () => {
   
   return (

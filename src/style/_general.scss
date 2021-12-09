@@ -7,3 +7,11 @@
 html {
   font-size: 62.5%;
 }
+
+body {
+  font-size: $base;
+}
+
+h1 {
+  font-size: $title;
+}

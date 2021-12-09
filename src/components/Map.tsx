@@ -2,6 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useRef, useEffect, useState } from 'react'
 import mapboxgl from 'mapbox-gl';
+// import Directions from '@mapbox/mapbox-gl-directions';
 import "mapbox-gl/dist/mapbox-gl.css";
 import {useAppDispatch, useAppSelector} from '../app/hooks';
 import {
@@ -18,8 +19,7 @@ import {FaHome} from 'react-icons/fa'
 
 
 // Interfaces
-import { ICity } from '../utils/interfaces'
-
+import { ICity, IDumpster } from '../utils/interfaces'
 
 import './Map.scss'
 
@@ -92,6 +92,7 @@ const MapComponent: React.FC = () => {
                 dispatch(setAppStatus('failed'))
             })
     }, []);
+
     useEffect(() => {
         if (city === undefined) return
         axios.get(
