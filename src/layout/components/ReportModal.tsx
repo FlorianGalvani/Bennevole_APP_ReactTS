@@ -1,5 +1,4 @@
 import React, { FormEvent, useEffect, useState } from 'react'
-import './ReportModal.scss'
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import axios from 'axios';
 import { IoClose } from "react-icons/io5";
@@ -44,12 +43,10 @@ const ReportModal: React.FC = () => {
         if (!err) {
             await axios.post(`http://localhost:8000/api/report/${dumpsterId}`, { type: type, information: information })
                 .then(function (response) {
-                    console.log(response);
-                    
+
                     dispatch(setIsOpenReportModal(false))
                 })
                 .catch(function (error) {
-                    console.log(error);
                 });
         }
     }
