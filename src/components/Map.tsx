@@ -17,8 +17,6 @@ import { useTranslation, Trans } from 'react-i18next';
 // Interfaces
 import { ICity, IDumpster } from '../utils/interfaces'
 
-import './Map.scss'
-
 const lngs = {
     en: { nativeName: 'English' },
     fr: { nativeName: 'French' }
@@ -82,8 +80,6 @@ const MapComponent: React.FC = () => {
         
         axios.get('http://localhost:8000/api/cities')
             .then((result) => {
-                console.log(result.data);
-                
                 setCities(result.data)
                 dispatch(setAppStatus('ok'))
 
@@ -120,7 +116,6 @@ const MapComponent: React.FC = () => {
                 result.data.map((dumpster: any) => {
                     // Add an image to use as a custom marker
                     // create the popup
-                    console.log(dumpster);
                     
                     const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
                         `
@@ -144,8 +139,7 @@ const MapComponent: React.FC = () => {
                             const navTo = document.getElementById('navigateTo')
                             const id = reportButton.getAttribute('name')
                             const coords = [navTo.getAttribute('lon'),navTo.getAttribute('lat')]
-                            console.log('coords', coords);
-                            
+
                             reportButton.addEventListener('click', () => {
 
                                 dispatch(setIdDumpster(id))
@@ -154,8 +148,7 @@ const MapComponent: React.FC = () => {
                             })
                             navTo.addEventListener('click', () => {
                                 axios.get(`https://api.mapbox.com/directions/v5/mapbox/walking/${coords[0]},${coords[1]};${userCoords[0]},${userCoords[1]}?access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`).then((res) => {
-                                    console.log(res.data);
-                                    
+
                                 })
                             })
                         })

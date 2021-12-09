@@ -5,8 +5,6 @@ import Loading from './components/Loading'
 import ReportModal from './components/ReportModal'
 import { useAppSelector} from '../app/hooks';
 
-
-import './layout.scss'
 import {
     selectAppStatus
   } from '../features/app/appSlice';
