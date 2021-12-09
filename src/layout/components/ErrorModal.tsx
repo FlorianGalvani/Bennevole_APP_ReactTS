@@ -1,5 +1,5 @@
 import React from 'react'
-import './ErrorModal.css'
+
 function ErrorModal() {
     return (
         <div className="ErrorModalContainer">
