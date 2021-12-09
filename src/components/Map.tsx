@@ -13,8 +13,7 @@ import {
 } from '../features/app/appSlice';
 import axios from 'axios'
 import { useTranslation } from 'react-i18next';
-import {ImCross , ImHome3 } from 'react-icons/im'
-import {FaHome} from 'react-icons/fa'
+
 
 
 
@@ -75,7 +74,7 @@ const MapComponent: React.FC = () => {
                     (result) => {
                         setUserCoords([position.coords.longitude, position.coords.latitude])
                         setZoom(15)
-                        // setCity(result.features[0].context[1].text);
+                        dispatch(setSelectedCity(result.features[0].context[1].text))
                     }
                 )
         });
@@ -92,7 +91,7 @@ const MapComponent: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        if (city === undefined) return
+        if (city === '') return
         axios.get(
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${city}, France}.json?limit=1&access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`
         )
@@ -155,7 +154,7 @@ const MapComponent: React.FC = () => {
     }, [city])
     return (
         <div className="mapComponent">
-            <div className="optionMenu">
+            {/* <div className="optionMenu">
                 <div>
                     {Object.keys(lngs).map((lng) => (
                         <button key={lng} style={{ fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal' }} type="submit" onClick={() => i18n.changeLanguage(lng)}>
@@ -163,7 +162,7 @@ const MapComponent: React.FC = () => {
                         </button>
                     ))}
                 </div>
-            </div>
+            </div> */}
             <div ref={mapContainer} className="map-container" />
         </div>
     )
