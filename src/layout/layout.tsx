@@ -35,19 +35,14 @@ const Layout : React.FC =({children}) => {
 
     return (
         <>
-<<<<<<< HEAD
-            <SearchBlock/>
-            {/*<div className="logo">*/}
-            {/*    <h1>Bennevole</h1>*/}
-            {/*</div>*/}
-=======
             <div className="secretVroom" id="secretVroom">
                 <img src="./logo.png" alt="" />
             </div>
-            <div ref={logoRef} className="logo" id="logo" onClick={() => secrect()}>
-                <h1>Bennevole</h1>
-            </div>
->>>>>>> 592a6909ddcaa3cb0712dc73bbe086affa7e1d43
+
+            <SearchBlock/>
+            {/*<div ref={logoRef} className="logo" id="logo" onClick={() => secrect()}>*/}
+            {/*    <h1>Bennevole</h1>*/}
+            {/*</div>*/}
             {appStatus === 'loading' && <Loading/>}
             {appStatus === 'failed' && <ErrorModal/>}
             <ReportModal/>

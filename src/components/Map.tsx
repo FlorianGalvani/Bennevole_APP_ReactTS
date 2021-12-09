@@ -4,11 +4,12 @@ import React, { useRef, useEffect, useState } from 'react'
 import mapboxgl from 'mapbox-gl';
 // import Directions from '@mapbox/mapbox-gl-directions';
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useAppDispatch } from '../app/hooks';
+import {useAppDispatch, useAppSelector} from '../app/hooks';
 import {
+    selectedCity,
     setAppStatus,
     setIdDumpster,
-    setIsOpenReportModal
+    setIsOpenReportModal, setSelectedCity
 } from '../features/app/appSlice';
 import axios from 'axios'
 import { useTranslation, Trans } from 'react-i18next';
@@ -34,13 +35,15 @@ const MapComponent: React.FC = () => {
     let map = useRef<mapboxgl.Map | null>(null);
 
     const [cities, setCities] = useState<Array<ICity>>([])
-    const [city, setCity] = useState<string>()
+    // const [city, setCity] = useState<string>()
 
     const [zoom, setZoom] = useState<number>(5)
 
     const [markers, setMarkers] = useState<Array<any>>([]) // Use to stock
 
     const [userCoords, setUserCoords] = useState<Array<number>>([])
+
+    const city = useAppSelector(selectedCity)
 
     useEffect(() => {
 
@@ -69,12 +72,12 @@ const MapComponent: React.FC = () => {
                     (result) => {
                         setUserCoords([position.coords.longitude, position.coords.latitude])
                         setZoom(15)
-                        setCity(result.features[0].context[1].text);
+                        // setCity(result.features[0].context[1].text);
                     }
                 )
         });
 
-        map.current.addControl(geocolateController, 'bottom-left');
+        map.current.addControl(geocolateController, 'top-right');
 
         
         axios.get('http://localhost:8000/api/cities')
@@ -168,15 +171,6 @@ const MapComponent: React.FC = () => {
         <div className="mapComponent">
             <div className="optionMenu">
 
-                <select name="city" id="citySelect" value={city} onChange={(e) => { if (e.target.value !== '') { setCity(e.target.value) } }}>
-                    <option value="">{t('map.citySelector')}</option>
-   
-                    {cities.map((city) => (
-                        <option value={city.cityName.toString()} key={city.cityName.toString()}>
-                            {city.cityName}
-                        </option>
-                    ))}
-                </select>
                 <div>
                     {Object.keys(lngs).map((lng) => (
                         <button key={lng} style={{ fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal' }} type="submit" onClick={() => i18n.changeLanguage(lng)}>
