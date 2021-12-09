@@ -47,11 +47,8 @@ const MapComponent: React.FC = () => {
 
     const [userCoords, setUserCoords] = useState<Array<number>>([])
 
-<<<<<<< HEAD
-    const city = useAppSelector(selectedCity)
-=======
-    const [dumspterAdress, setDumspterAdress] = useState('')
->>>>>>> c55e048f7fdb606750c6510a82cab1b1d9fc04c5
+    const city = useAppSelector(selectedCity);
+    const [dumspterAdress, setDumspterAdress] = useState('');
 
     useEffect(() => {
 
@@ -160,20 +157,6 @@ const MapComponent: React.FC = () => {
     return (
         <div className="mapComponent">
             <div className="optionMenu">
-<<<<<<< HEAD
-
-=======
-                <FaHome/>
-                <select name="city" id="citySelect" value={city} onChange={(e) => { if (e.target.value !== '') { setCity(e.target.value) } }}>
-                    <option value="">{t('map.citySelector')}</option>
-   
-                   {cities.length > 0 && cities.map((city) => (
-                        <option value={city.cityName} key={city.cityName}>
-                            {city}
-                        </option>
-                    ))}
-                </select>
->>>>>>> c55e048f7fdb606750c6510a82cab1b1d9fc04c5
                 <div>
                     {Object.keys(lngs).map((lng) => (
                         <button key={lng} style={{ fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal' }} type="submit" onClick={() => i18n.changeLanguage(lng)}>
