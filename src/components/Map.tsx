@@ -21,8 +21,6 @@ import {FaHome} from 'react-icons/fa'
 // Interfaces
 import { ICity, IDumpster } from '../utils/interfaces'
 
-import './Map.scss'
-
 const lngs = {
     en: { nativeName: 'English' },
     fr: { nativeName: 'French' }
