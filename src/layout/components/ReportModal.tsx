@@ -69,6 +69,7 @@ const ReportModal: React.FC = () => {
                 <IoClose className="closeModal" onClick={() => dispatch(setIsOpenReportModal(false))} />
                 <h3>Rapport d'erreur</h3>
                 {errorsType && <p>{errorsType}</p>}
+                <div className="select">
                 <select name="errorType" className="errorType" id="type" onChange={(e) => setType(e.target.value)}>
                     <option value="default">Type d'erreur</option>
                     <option value="errLoc"
@@ -78,6 +79,9 @@ const ReportModal: React.FC = () => {
                     >Cette benne ne correspond pas a son type</option
                     >
                 </select>
+                 <div className="select_arrow">
+                 </div>
+                </div>
                 {errorsInfo && <p>{errorsInfo}</p>}
                 <textarea
                     name="information"
@@ -88,7 +92,7 @@ const ReportModal: React.FC = () => {
                     onChange={(e) => setInformation(e.target.value)}
                 ></textarea>
                 <br />
-                <input type="submit" value="Envoyer" />
+                <input className="btn_modal" type="submit" value="Envoyer" />
             </form>
         </div>
     )
