@@ -121,9 +121,10 @@ const MapComponent: React.FC = () => {
                         .then((res) => {
                             dumpster.dumpsterAddress = res.data.features[0].place_name
                             const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-                                `
-                                <p>${dumpster.dumpsterAddress}</p>
-                                <a id="reportButton" name="${dumpster.id}">Report</a>
+                                `<div class="box_text_popup"
+                                <p class="popup_text"><img src="pin_gps.png" alt="gps">${dumpster.dumpsterAddress}</p>
+                                </div>
+                                <a id="reportButton" name="${dumpster.id}" style="background-color:#669b6b">Report</a>
                                 `
                             )
                             // create DOM element for the marker
