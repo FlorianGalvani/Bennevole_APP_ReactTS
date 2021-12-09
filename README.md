@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 Pour commencer à utiliser l'application veilliez a bien avoir telecharger et lancer l'api symfony du projet disponible à cette adresse: https://github.com/FlorianGalvani/bennevol_API
 
 
@@ -23,12 +22,3 @@ Si vous utiliser Yarn
 yarn
 yarn start
 ```
-
-=======
-### `yarn start
-
-
->>>>>>> f27be441bac012c3d8039e97973e054e06e1cd0b
-
-
-
