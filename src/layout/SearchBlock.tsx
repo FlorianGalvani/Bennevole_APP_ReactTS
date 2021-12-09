@@ -46,7 +46,7 @@ export default function SearchBlock() {
                             id="citySelect"
                             onChange={disptachCity}
                         >
-                            <option>---</option>
+                            <option>- Choisir ville -</option>
 
                             {data
                                 .map((ville) => (
