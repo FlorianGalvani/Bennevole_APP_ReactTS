@@ -2,8 +2,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useRef, useEffect, useState } from 'react'
 import mapboxgl from 'mapbox-gl';
-// import Directions from '@mapbox/mapbox-gl-directions';
-import "mapbox-gl/dist/mapbox-gl.css";
 import {useAppDispatch, useAppSelector} from '../app/hooks';
 import {
     selectedCity,
@@ -27,7 +25,6 @@ const MapComponent: React.FC = () => {
     let map = useRef<mapboxgl.Map | null>(null);
 
     const [cities, setCities] = useState<Array<ICity>>([])
-    // const [city, setCity] = useState<string>()
 
     const [zoom, setZoom] = useState<number>(5)
 
