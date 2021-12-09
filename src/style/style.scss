@@ -1,0 +1,19 @@
+//  Variables
+// Colors
+$green: #669b6b;
+//$beige: ;
+$white: #fff;
+
+// Fonts
+$title: 4rem;
+$base: 1.6rem;
+
+// Imports
+@import "general";
+@import "index";
+@import "Map";
+@import "ErrorModal";
+@import "ReportModal";
+@import "Loading";
+@import "layout";
+@import "SearchBlock";

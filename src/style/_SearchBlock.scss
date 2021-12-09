@@ -1,0 +1,87 @@
+.searchBlock {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 300px;
+    z-index: 3;
+    border-radius: 30px 30px 0 0;
+
+    background: rgba( 233, 180, 131, 0.6 );
+    box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 );
+    backdrop-filter: blur( 5px );
+    -webkit-backdrop-filter: blur( 5px );
+    border: 1px solid rgba( 255, 255, 255, 0.18 );
+
+    transition: 0.3s;
+
+    &.hideBar {
+        bottom: -220px;
+
+        .searchContainer {
+            position: relative;
+
+            .bar {
+                position: absolute;
+                //top: -40px;
+                top: 0px;
+
+            }
+            h1, p {
+                display: none;
+            }
+        }
+    }
+}
+
+.searchContainer {
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    .bar {
+        width: 30px;
+        height: 4px;
+        border-radius: 30px;
+        background-color: #669b6b;
+        margin: 10px;
+        cursor: pointer;
+    }
+
+    h1, p {
+        color: white;
+        margin: 20px 0;
+    }
+}
+
+.searchBarContainer {
+
+
+    select {
+        padding: 10px;
+        margin: 30px 0;
+        border: none;
+        border-radius: 10px;
+        background-color: #669b6b;
+        color: white;
+        width: 100%;
+        outline: none;
+        cursor: pointer;
+    }
+
+    select option {
+        background-color: #669b6b;
+        color: white;
+        width: 310px;
+        padding: 0 15px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+}

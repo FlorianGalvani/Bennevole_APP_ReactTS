@@ -1,0 +1,23 @@
+.logo {
+    position: absolute;
+    bottom: 1vh;
+    right: 2vw;
+    z-index: 3;
+    transition: 0.5s;
+    padding: 4%;
+    background-color: #fff;
+}
+.secretVroom {
+    z-index: 999;
+    position: fixed;
+    bottom: 0;
+    transition: 2s;
+    right: -600px;
+    img {
+        width: 400px;
+    }
+}
+.logo h1 {
+    font-size: 8vw;
+
+}
