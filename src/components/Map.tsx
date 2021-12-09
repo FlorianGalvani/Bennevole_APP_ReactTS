@@ -2,7 +2,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useRef, useEffect, useState } from 'react'
 import mapboxgl from 'mapbox-gl';
-// import Directions from '@mapbox/mapbox-gl-directions';
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useAppDispatch } from '../app/hooks';
 import {
@@ -11,10 +10,15 @@ import {
     setIsOpenReportModal
 } from '../features/app/appSlice';
 import axios from 'axios'
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import {ImCross , ImHome3 } from 'react-icons/im'
+import {FaHome} from 'react-icons/fa'
+
+
 
 // Interfaces
-import { ICity, IDumpster } from '../utils/interfaces'
+import { ICity } from '../utils/interfaces'
+
 
 import './Map.scss'
 
@@ -41,6 +45,8 @@ const MapComponent: React.FC = () => {
     const [markers, setMarkers] = useState<Array<any>>([]) // Use to stock
 
     const [userCoords, setUserCoords] = useState<Array<number>>([])
+
+    const [dumspterAdress, setDumspterAdress] = useState('')
 
     useEffect(() => {
 
@@ -76,19 +82,14 @@ const MapComponent: React.FC = () => {
 
         map.current.addControl(geocolateController, 'bottom-left');
 
-        
         axios.get('http://localhost:8000/api/cities')
             .then((result) => {
-                console.log(result.data);
-                
                 setCities(result.data)
                 dispatch(setAppStatus('ok'))
-
             }).catch((err) => {
                 dispatch(setAppStatus('failed'))
             })
     }, []);
-
     useEffect(() => {
         if (city === undefined) return
         axios.get(
@@ -104,7 +105,6 @@ const MapComponent: React.FC = () => {
                     zoom: 10,
                     essential: true // this animation is considered essential with respect to prefers-reduced-motion
                 });
-
             });
         axios.get(`http://localhost:8000/api/dumpsters/${city}`)
             .then((result) => {
@@ -117,63 +117,49 @@ const MapComponent: React.FC = () => {
                 result.data.map((dumpster: any) => {
                     // Add an image to use as a custom marker
                     // create the popup
-                    console.log(dumpster);
-                    
-                    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-                        `
-                        <a id="reportButton" name="${dumpster.id}">Report</a>
-                        <button id="navigateTo" lat="${dumpster.lat}" lon="${dumpster.lng}">Navigate To</button>  
-                        `
-                    )
-                    // create DOM element for the marker
-                    const el = document.createElement('div');
-                    el.id = `marker_${dumpster.id}`;
-                    // // create the marker
-                    const marker = new mapboxgl.Marker(el)
-                        .setLngLat([dumpster.lng, dumpster.lat])
-                        .setPopup(popup) // sets a popup on this marker
-                        .addTo(map.current);
-
-                    markers.push(marker)
-                    marker.getElement().addEventListener('click', (e) => {
-                        setTimeout(() => {
-                            const reportButton = document.getElementById('reportButton')
-                            const navTo = document.getElementById('navigateTo')
-                            const id = reportButton.getAttribute('name')
-                            const coords = [navTo.getAttribute('lon'),navTo.getAttribute('lat')]
-                            console.log('coords', coords);
-                            
-                            reportButton.addEventListener('click', () => {
-
-                                dispatch(setIdDumpster(id))
-                                dispatch(setIsOpenReportModal(true))
-
-                            })
-                            navTo.addEventListener('click', () => {
-                                axios.get(`https://api.mapbox.com/directions/v5/mapbox/walking/${coords[0]},${coords[1]};${userCoords[0]},${userCoords[1]}?access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`).then((res) => {
-                                    console.log(res.data);
-                                    
+                    axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${dumpster.lng + "," + dumpster.lat}.json?limit=1&access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`)
+                        .then((res) => {
+                            dumpster.dumpsterAddress = res.data.features[0].place_name
+                            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                                `
+                                <p>${dumpster.dumpsterAddress}</p>
+                                <a id="reportButton" name="${dumpster.id}">Report</a>
+                                `
+                            )
+                            // create DOM element for the marker
+                            const el = document.createElement('div');
+                            el.id = `marker_${dumpster.id}`;
+                            // // create the marker
+                            const marker = new mapboxgl.Marker(el)
+                                .setLngLat([dumpster.lng, dumpster.lat])
+                                .setPopup(popup) // sets a popup on this marker
+                                .addTo(map.current);
+                            markers.push(marker)
+                            marker.getElement().addEventListener('click', (e) => {
+                                setTimeout(() => {
+                                    const reportButton = document.getElementById('reportButton')
+                                    const navTo = document.getElementById('navigateTo')
+                                    const id = reportButton.getAttribute('name')
+                                    // const coords = [navTo.getAttribute('lon'), navTo.getAttribute('lat')]
+                                    reportButton.addEventListener('click', () => {
+                                        dispatch(setIdDumpster(id))
+                                        dispatch(setIsOpenReportModal(true))
+                                    })
                                 })
                             })
                         })
-                    })
                 })
-
-
             })
-
     }, [city])
-
     return (
         <div className="mapComponent">
             <div className="optionMenu">
-
+                <FaHome/>
                 <select name="city" id="citySelect" value={city} onChange={(e) => { if (e.target.value !== '') { setCity(e.target.value) } }}>
                     <option value="">{t('map.citySelector')}</option>
-   
-                    {cities.map((city) => (
-                        <option value={city.cityName.toString()} key={city.cityName.toString()}>
-                            {city.cityName}
+                    {cities.length > 0 && cities.map((cityInfos) => (
+                        <option value={cityInfos.cityName} key={cityInfos.cityName}>
+                            {cityInfos.cityName}
                         </option>
                     ))}
                 </select>
@@ -186,9 +172,7 @@ const MapComponent: React.FC = () => {
                 </div>
             </div>
             <div ref={mapContainer} className="map-container" />
-
         </div>
-
     )
 }
 export default MapComponent
