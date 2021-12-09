@@ -171,9 +171,9 @@ const MapComponent: React.FC = () => {
                 <select name="city" id="citySelect" value={city} onChange={(e) => { if (e.target.value !== '') { setCity(e.target.value) } }}>
                     <option value="">{t('map.citySelector')}</option>
    
-                    {cities.map((city) => (
-                        <option value={city.cityName.toString()} key={city.cityName.toString()}>
-                            {city.cityName}
+                   {cities.length > 0 && cities.map((city) => (
+                        <option value={city.cityName} key={city.cityName}>
+                            {city}
                         </option>
                     ))}
                 </select>
