@@ -4,6 +4,7 @@ const Loading: React.FC = () => {
         <div className="Loading">
             <img src="./logo.png" alt="" />
         </div>
+
     )
 }
 export default Loading
