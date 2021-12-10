@@ -25,12 +25,6 @@ const Layout : React.FC =({children}) => {
             </div>
 
             <SearchBlock/>
-<<<<<<< HEAD
-=======
-            {/*<div ref={logoRef} className="logo" id="logo" onClick={() => secrect()}>*/}
-            {/*    <h1>Bennevole</h1>*/}
-            {/*</div>*/}
->>>>>>> 50202f43e6aec979bc3786dfbf3262a506244592
             {appStatus === 'loading' && <Loading/>}
             {appStatus === 'failed' && <ErrorModal/>}
             <ReportModal/>
