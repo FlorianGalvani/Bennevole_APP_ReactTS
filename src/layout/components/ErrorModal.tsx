@@ -1,11 +1,15 @@
 import React from 'react'
-import './ErrorModal.css'
+
 function ErrorModal() {
+
+
     return (
         <div className="ErrorModalContainer">
             <div className="ErrorModal">
-                <p>Une erreur est survenue</p>
-                <p>Veuillez <a href="">Recharger la page</a> ou essayer ulterierement</p>
+                <img src="./SmylingDumpsterOnfire.png" alt="errorDumpster" />
+                <h1>Une erreur est survenue </h1>
+                <p>Veuillez recharger la page ou si le probleme persiste essayer ulterierement</p>
+                <button onClick={() => window.location.reload()}>Recharger la page</button>
             </div>
         </div>
     )

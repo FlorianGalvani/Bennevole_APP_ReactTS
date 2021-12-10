@@ -1,9 +1,8 @@
 import React from 'react'
-import './Loading.css'
 const Loading: React.FC = () => {
     return (
         <div className="Loading">
-            <p>Chargement</p>
+            <img src="./logo.png" alt="" />
         </div>
     )
 }

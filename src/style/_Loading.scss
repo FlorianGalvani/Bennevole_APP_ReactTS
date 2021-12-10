@@ -1,0 +1,33 @@
+.Loading {
+    height: 100vh;
+    width: 100vw;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99;
+    background: linear-gradient(
+      60deg,
+      rgb(10, 31, 13) 0%,
+      rgba(112, 238, 72, 1) 50%,
+      rgba(0, 168, 28, 1) 100%
+    );
+    overflow: hidden;
+    img {
+      position: absolute;
+      right: -45vw;
+      animation: loader 2s infinite;
+      width: 50%;
+    }
+  }
+  @keyframes loader {
+    0% {
+      right: -45vw;
+    }
+    50% {
+      right: 30vw;
+    }
+    100% {
+      right: 145vw;
+    }
+  }

@@ -1,5 +1,4 @@
 interface ICity {
-
 }
 
 interface IDumpster {

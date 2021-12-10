@@ -1,17 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useRef, useEffect, useState } from 'react'
-import mapboxgl from 'mapbox-gl/';
+import mapboxgl from 'mapbox-gl';
+// import Directions from '@mapbox/mapbox-gl-directions';
 import "mapbox-gl/dist/mapbox-gl.css";
-
-import './Map.css'
-import { ICity, IDumpster } from '../utils/interfaces'
-import { useAppDispatch } from '../app/hooks';
+import {useAppDispatch, useAppSelector} from '../app/hooks';
 import {
+    selectedCity,
     setAppStatus,
     setIdDumpster,
-    setIsOpenReportModal
+    setIsOpenReportModal, 
+    setSelectedCity
 } from '../features/app/appSlice';
+import axios from 'axios'
+
+// Interfaces
+import { ICity } from '../utils/interfaces'
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA';
 
@@ -23,68 +27,80 @@ const MapComponent: React.FC = () => {
     let map = useRef<mapboxgl.Map | null>(null);
 
     const [cities, setCities] = useState<Array<ICity>>([])
-    const [city, setCity] = useState<string>()
+    // const [city, setCity] = useState<string>()
+
+    const [zoom, setZoom] = useState<number>(5)
 
     const [markers, setMarkers] = useState<Array<any>>([]) // Use to stock
 
+    const [userCoords, setUserCoords] = useState<Array<number>>([])
+
+    const city = useAppSelector(selectedCity);
+    const [dumspterAdress, setDumspterAdress] = useState('');
+
     useEffect(() => {
+
         if (map.current) return; // initialize map only once
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
             style: 'mapbox://styles/mapbox/streets-v11',
             center: [2.483833000000004, 46.48293196437044],
-            zoom: 5,
+            zoom: zoom,
             pitch: 15
         });
-        map.current.addControl(
+        const geocolateController = (
             new mapboxgl.GeolocateControl({
                 positionOptions: {
                     enableHighAccuracy: true
                 },
-                // When active the map will receive updates to the device's location as it changes.
                 trackUserLocation: true,
-                // Draw an arrow next to the location dot to indicate which direction the device is heading.
-                showUserHeading: true
-            }),
-            'bottom-left'
+                showUserHeading: true,
+                showAccuracyCircle: false
+            })
         );
+        geocolateController.on('geolocate', (position: any) => {
+            fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${position.coords.longitude + "," + position.coords.latitude}.json?limit=1&access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`)
+                .then((res) => res.json())
+                .then(
+                    (result) => {
+                        setUserCoords([position.coords.longitude, position.coords.latitude])
+                        
+                        dispatch(setSelectedCity(result.features[0].context[1].text))
 
+                    }
+                )
+        });
 
-        fetch('http://localhost:8000/api/cities')
-            .then(response => response.json())
+        map.current.addControl(geocolateController, 'top-right');
+
+        axios.get('http://localhost:8000/api/cities')
             .then((result) => {
-                setCities(result)
+                console.log(result.data);
+                
+                setCities(result.data)
                 dispatch(setAppStatus('ok'))
-
             }).catch((err) => {
-                console.log('There is an error in fetching', err);
                 dispatch(setAppStatus('failed'))
-
-
             })
     }, []);
 
     useEffect(() => {
-        if (city === undefined) return
-        fetch(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${city + ", France"
-            }.json?limit=1&access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`
+        if (city === '') return
+        axios.get(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${city}, France}.json?limit=1&access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`
         )
-            .then((response) => response.json())
             .then((result) => {
-                const coords = result.features[0].center;
+                const coords = result.data.features[0].center;
                 map.current.flyTo({
                     center: [
                         coords[0],
                         coords[1]
                     ],
-                    zoom:10,
+                    zoom: 13,
                     essential: true // this animation is considered essential with respect to prefers-reduced-motion
                 });
-
             });
-        fetch(`http://localhost:8000/api/dumpsters/${city}`)
-            .then((res) => res.json())
+        axios.get(`http://localhost:8000/api/dumpsters/${city}`)
             .then((result) => {
                 if (markers.length > 0) {
                     markers.forEach(element => {
@@ -92,64 +108,48 @@ const MapComponent: React.FC = () => {
                     });
                 }
                 // eslint-disable-next-line array-callback-return
-                result.map((dumpster: any) => {
-                    console.log(dumpster);
-
+                result.data.map((dumpster: any) => {
                     // Add an image to use as a custom marker
                     // create the popup
-                    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(`<a id="reportButton" name="${dumpster.id}">Report error</a>`)
-                    // create DOM element for the marker
-                    const el = document.createElement('div');
-                    el.id = `marker_${dumpster.id}`;
-                    // // create the marker
-                    const marker = new mapboxgl.Marker(el)
-                        .setLngLat([dumpster.lng, dumpster.lat])
-                        .setPopup(popup) // sets a popup on this marker
-                        .addTo(map.current);
-
-                    markers.push(marker)
-                    marker.getElement().addEventListener('click', (e) => {
-                        setTimeout(() => {
-                            const reportButton = document.getElementById('reportButton')
-                            const id = reportButton.getAttribute('name')
-
-                            reportButton.addEventListener('click', () => {
-
-                                dispatch(setIdDumpster(id))
-                                console.log('id is : ', id)
-                                dispatch(setIsOpenReportModal(true))
-
+                    axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${dumpster.lng + "," + dumpster.lat}.json?limit=1&access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`)
+                        .then((res) => {
+                            dumpster.dumpsterAddress = res.data.features[0].place_name
+                            const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                                `<div class="box_text_popup"
+                                <p class="popup_text"><img src="pin_gps.png" alt="gps">${dumpster.dumpsterAddress}</p>
+                                </div>
+                                <a id="reportButton" name="${dumpster.id}" style="background-color:#669b6b">Report</a>
+                                `
+                            )
+                            // create DOM element for the marker
+                            const el = document.createElement('div');
+                            el.id = `marker_${dumpster.id}`;
+                            // // create the marker
+                            const marker = new mapboxgl.Marker(el)
+                                .setLngLat([dumpster.lng, dumpster.lat])
+                                .setPopup(popup) // sets a popup on this marker
+                                .addTo(map.current);
+                            markers.push(marker)
+                            marker.getElement().addEventListener('click', (e) => {
+                                setTimeout(() => {
+                                    const reportButton = document.getElementById('reportButton')
+                                    const navTo = document.getElementById('navigateTo')
+                                    const id = reportButton.getAttribute('name')
+                                    // const coords = [navTo.getAttribute('lon'), navTo.getAttribute('lat')]
+                                    reportButton.addEventListener('click', () => {
+                                        dispatch(setIdDumpster(id))
+                                        dispatch(setIsOpenReportModal(true))
+                                    })
+                                })
                             })
-
                         })
-                    })
                 })
-
-
             })
-
     }, [city])
-
     return (
         <div className="mapComponent">
-            <div className="optionMenu">
-                <select name="city" id="citySelect" onChange={(e) => { if (e.target.value !== '') { setCity(e.target.value) } }}>
-                    <option value="">Select a city</option>
-                    {cities.map((city) => (
-                        <option value={city.toString()} key={city.toString()}>
-                            {city}
-                        </option>
-                    ))}
-                </select>
-                {/* <select name="mapStyle" id="mapStyleSelect">
-                    <option value="satelite">Satelite View</option>
-                </select> */}
-
-            </div>
             <div ref={mapContainer} className="map-container" />
-
         </div>
-
     )
 }
 export default MapComponent
