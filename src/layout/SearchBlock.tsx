@@ -2,13 +2,15 @@ import React, { useEffect, useState} from 'react';
 import axios from "axios";
 import { useAppDispatch } from '../app/hooks';
 import {setSelectedCity} from "../features/app/appSlice";
-import {ICity} from "../utils/interfaces"
+
 export default function SearchBlock() {
 
     const dispatch = useAppDispatch();
     const [cities, setCities] = useState([]);
     const [barVisibility, setBarVisibility] = useState("");
     const [secretState, setSecretState] = useState(1)
+
+    const [audio] = useState(new Audio('./tutut.mp3'));
 
 
     useEffect(() => {
@@ -36,6 +38,8 @@ export default function SearchBlock() {
 
     function secrect(){
         if (secretState === 10) {
+            audio.play()
+
             document.getElementById('secretVroom').style.right = "600px"
             setTimeout(() => {
                 document.getElementById('secretVroom').style.transition = "none"
