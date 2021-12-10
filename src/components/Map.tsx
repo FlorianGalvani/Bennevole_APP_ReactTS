@@ -4,32 +4,22 @@ import React, { useRef, useEffect, useState } from 'react'
 import mapboxgl from 'mapbox-gl';
 // import Directions from '@mapbox/mapbox-gl-directions';
 import "mapbox-gl/dist/mapbox-gl.css";
-import {useAppDispatch, useAppSelector} from '../app/hooks';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
 import {
     selectedCity,
     setAppStatus,
     setIdDumpster,
-    setIsOpenReportModal, setSelectedCity
+    setIsOpenReportModal,
+    setSelectedCity
 } from '../features/app/appSlice';
 import axios from 'axios'
-import { useTranslation } from 'react-i18next';
-import {ImCross , ImHome3 } from 'react-icons/im'
-import {FaHome} from 'react-icons/fa'
-
-
 
 // Interfaces
-import { ICity, IDumpster } from '../utils/interfaces'
-
-const lngs = {
-    en: { nativeName: 'English' },
-    fr: { nativeName: 'French' }
-};
+import { ICity } from '../utils/interfaces'
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA';
 
 const MapComponent: React.FC = () => {
-    const { t, i18n } = useTranslation();
 
     const dispatch = useAppDispatch();
 
@@ -74,8 +64,9 @@ const MapComponent: React.FC = () => {
                 .then(
                     (result) => {
                         setUserCoords([position.coords.longitude, position.coords.latitude])
-                        setZoom(15)
-                        // setCity(result.features[0].context[1].text);
+
+                        dispatch(setSelectedCity(result.features[0].context[1].text))
+
                     }
                 )
         });
@@ -85,14 +76,17 @@ const MapComponent: React.FC = () => {
         axios.get('http://localhost:8000/api/cities')
             .then((result) => {
                 setCities(result.data)
-                dispatch(setAppStatus('ok'))
+                setTimeout(() => {
+                    dispatch(setAppStatus('ok'))
+
+                }, 2000);
             }).catch((err) => {
                 dispatch(setAppStatus('failed'))
             })
     }, []);
 
     useEffect(() => {
-        if (city === undefined) return
+        if (city === '') return
         axios.get(
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${city}, France}.json?limit=1&access_token=pk.eyJ1IjoibGVnaWxhbWFscyIsImEiOiJja21kNnp5dmEyaWl4MnVwMWNleDN3enhkIn0.TOMWAu7ep733glbYBZFSxA`
         )
@@ -103,7 +97,7 @@ const MapComponent: React.FC = () => {
                         coords[0],
                         coords[1]
                     ],
-                    zoom: 10,
+                    zoom: 13,
                     essential: true // this animation is considered essential with respect to prefers-reduced-motion
                 });
             });
@@ -155,15 +149,6 @@ const MapComponent: React.FC = () => {
     }, [city])
     return (
         <div className="mapComponent">
-            <div className="optionMenu">
-                <div>
-                    {Object.keys(lngs).map((lng) => (
-                        <button key={lng} style={{ fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal' }} type="submit" onClick={() => i18n.changeLanguage(lng)}>
-                            {lng}
-                        </button>
-                    ))}
-                </div>
-            </div>
             <div ref={mapContainer} className="map-container" />
         </div>
     )

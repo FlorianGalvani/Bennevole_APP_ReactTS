@@ -1,30 +1,18 @@
 import React from 'react'
-import { useTranslation } from 'react-i18next';
 
 
-const lngs = {
-    en: { nativeName: 'English' },
-    fr: { nativeName: 'French' }
-};
+
 
 function ErrorModal() {
-    const { t, i18n } = useTranslation();
+
 
     return (
         <div className="ErrorModalContainer">
             <div className="ErrorModal">
-                <div>
-                    {Object.keys(lngs).map((lng) => (
-                        <button key={lng} style={{ fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal' }} type="submit" onClick={() => i18n.changeLanguage(lng)}>
-                            {lng}
-                        </button>
-                    ))}
-                </div>
                 <img src="./SmylingDumpsterOnfire.png" alt="errorDumpster" />
-                <h1>{t('errorModal.title')}</h1>
-                <p>{t('errorModal.message')}</p>
-                <button onClick={() => window.location.reload()}>{t('errorModal.reload')}</button>
-                {/* <a href="/">{t('errorModal.reload')}</a> */}
+                <h1>Une erreur est survenue </h1>
+                <p>Veuillez recharger la page ou si le probleme persiste essayer ulterierement</p>
+                <button onClick={() => window.location.reload()}>Recharger la page</button>
             </div>
         </div>
     )

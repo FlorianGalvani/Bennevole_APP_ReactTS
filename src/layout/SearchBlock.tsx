@@ -1,19 +1,19 @@
-import React, {ChangeEventHandler, useEffect, useRef, useState} from 'react';
+import React, { useEffect, useState} from 'react';
 import axios from "axios";
 import { useAppDispatch } from '../app/hooks';
 import {setSelectedCity} from "../features/app/appSlice";
-
+import {ICity} from "../utils/interfaces"
 export default function SearchBlock() {
 
     const dispatch = useAppDispatch();
-    const [data, setData] = useState([]);
+    const [cities, setCities] = useState([]);
     const [barVisibility, setBarVisibility] = useState("");
 
     useEffect(() => {
-
         axios.get('http://localhost:8000/api/cities')
             .then((result) => {
-                setData(result.data);
+                
+                setCities(result.data);
             })
     }, []);
 
@@ -48,8 +48,7 @@ export default function SearchBlock() {
                         >
                             <option>---</option>
 
-                            {data
-                                .map((ville) => (
+                            {cities.map((ville) => (
                                     <option
                                         value={ville}
                                         key={ville}

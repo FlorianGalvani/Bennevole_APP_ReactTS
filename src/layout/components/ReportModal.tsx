@@ -43,8 +43,9 @@ const ReportModal: React.FC = () => {
         if (!err) {
             await axios.post(`http://localhost:8000/api/report/${dumpsterId}`, { type: type, information: information })
                 .then(function (response) {
-
                     dispatch(setIsOpenReportModal(false))
+                    setInformation('')
+                    setType('')
                 })
                 .catch(function (error) {
                 });
