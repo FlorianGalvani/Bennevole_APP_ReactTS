@@ -8,7 +8,7 @@ import {
     selectIdDumpster
 
 } from '../../features/app/appSlice';
-import { useTranslation } from 'react-i18next';
+
 
 const ReportModal: React.FC = () => {
     // Initialisation de la modification des données dans le store
@@ -21,8 +21,6 @@ const ReportModal: React.FC = () => {
     const [information, setInformation] = useState('')
     const [errorsType, setErrorsType] = useState('')
     const [errorsInfo, setErrorsInfo] = useState('')
-
-    const { t, i18n } = useTranslation();
 
     // Gestion de l'evenement d'envoi (submit) du formulaire de rapport d'erreur 
     const handleSubmit = async (evt: FormEvent<HTMLFormElement>) => {
@@ -65,7 +63,7 @@ const ReportModal: React.FC = () => {
         <div className="ReportModal" id="ReportModal">
             <form onSubmit={handleSubmit} >
                 <IoClose className="closeModal" onClick={() => dispatch(setIsOpenReportModal(false))} />
-                <h3>Rapport d'erreur</h3>
+                <h3 className="title_report">Rapport d'erreur</h3>
                 {errorsType && <p>{errorsType}</p>}
                 <div className="select">
                 <select name="errorType" className="errorType" id="type" onChange={(e) => setType(e.target.value)}>

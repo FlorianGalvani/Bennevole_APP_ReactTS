@@ -64,9 +64,8 @@ const MapComponent: React.FC = () => {
                 .then(
                     (result) => {
                         setUserCoords([position.coords.longitude, position.coords.latitude])
-
+                        setZoom(15)
                         dispatch(setSelectedCity(result.features[0].context[1].text))
-
                     }
                 )
         });
