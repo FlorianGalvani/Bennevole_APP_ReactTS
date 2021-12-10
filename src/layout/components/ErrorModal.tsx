@@ -1,8 +1,6 @@
 import React from 'react'
 
 function ErrorModal() {
-
-
     return (
         <div className="ErrorModalContainer">
             <div className="ErrorModal">

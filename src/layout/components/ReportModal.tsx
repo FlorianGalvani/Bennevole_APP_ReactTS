@@ -9,7 +9,6 @@ import {
 
 } from '../../features/app/appSlice';
 
-
 const ReportModal: React.FC = () => {
     // Initialisation de la modification des données dans le store
     const dispatch = useAppDispatch();
@@ -63,7 +62,7 @@ const ReportModal: React.FC = () => {
         <div className="ReportModal" id="ReportModal">
             <form onSubmit={handleSubmit} >
                 <IoClose className="closeModal" onClick={() => dispatch(setIsOpenReportModal(false))} />
-                <h3 className="title_report">Rapport d'erreur</h3>
+                <h3>Rapport d'erreur</h3>
                 {errorsType && <p>{errorsType}</p>}
                 <div className="select">
                 <select name="errorType" className="errorType" id="type" onChange={(e) => setType(e.target.value)}>
